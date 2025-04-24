@@ -1,5 +1,6 @@
 package com.web.board.form;
 
+import com.querydsl.core.annotations.QueryProjection;
 import com.web.board.domain.Board;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;

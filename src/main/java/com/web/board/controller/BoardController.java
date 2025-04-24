@@ -5,6 +5,7 @@ import com.web.board.form.BoardRequest;
 import com.web.board.form.BoardResponse;
 import com.web.board.service.BoardService;
 import jakarta.validation.Valid;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,12 +31,11 @@ public class BoardController {
     @GetMapping("/list")
     public String list(Model model,@PageableDefault(size = 2) Pageable pageable
             , @RequestParam(required = false, defaultValue = "") String searchText) {
-        Page<Board> boards = boardService.findAll(searchText, pageable);
-        int startPage = Math.max(1, boards.getPageable().getPageNumber() - 4);
-        int endPage = Math.min(boards.getTotalPages(), boards.getPageable().getPageNumber() + 4);
-        model.addAttribute("startPage", startPage);
-        model.addAttribute("endPage", endPage);
-        model.addAttribute("boards", boards);
+        Map<String, Object> result = boardService.findAll(searchText, pageable);
+
+        for (String key : result.keySet()) {
+            model.addAttribute(key, result.get(key));
+        }
         return "board/list";
     }
 

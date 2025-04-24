@@ -1,5 +1,7 @@
 package com.web;
 
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.boot.SpringApplication;
@@ -19,5 +21,10 @@ public class WebApplication {
 	@Bean
 	public AuditorAware<String> auditorProvider() {
 		return () -> Optional.of(UUID.randomUUID().toString());
+	}
+
+	@Bean
+	JPAQueryFactory queryFactory(EntityManager em) {
+		return new JPAQueryFactory(em);
 	}
 }

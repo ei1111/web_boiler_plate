@@ -4,8 +4,8 @@ import com.web.board.domain.Board;
 import com.web.board.form.BoardRequest;
 import com.web.board.form.BoardResponse;
 import com.web.board.repository.BoardRepository;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,16 +18,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class BoardService {
     private final BoardRepository boardRepository;
 
+    public Map<String ,Object> findAll(String searchText, Pageable pageable) {
+        Page<BoardResponse> boardResponse = boardRepository.findByTitleContainingOrContentContaining(searchText, pageable);
 
-    public List<BoardResponse> findAll2(String searchText, Pageable pageable)  {
-        Page<Board> boards = boardRepository.findByTitleContainingOrContentContaining(searchText, searchText, pageable);
-        int startPage = Math.max(1, boards.getPageable().getPageNumber() - 4);
-        int endPage = Math.min(boards.getTotalPages(), boards.getPageable().getPageNumber() + 4);
-        return BoardResponse.boardList(new ArrayList<>());
-    }
+        int startPage = Math.max(1, boardResponse.getPageable().getPageNumber() - 4);
+        int endPage = Math.min(boardResponse.getTotalPages(), boardResponse.getPageable().getPageNumber() + 4);
 
-    public Page<Board> findAll(String searchText, Pageable pageable) {
-        return   boardRepository.findByTitleContainingOrContentContaining(searchText,searchText, pageable);
+        Map<String ,Object> totalMap = new HashMap<>();
+        totalMap.put("boards", boardResponse);
+        totalMap.put("startPage", startPage);
+        totalMap.put("endPage", endPage);
+
+        return totalMap;
     }
 
     public Board findById(Long id) {

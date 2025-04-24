@@ -122,8 +122,7 @@
             th:each="i: ${#numbers.sequence(startPage, endPage)}">
           <a class="page-link" th:href="@{/board/list(page=${i-1}, searchText=${param.searchText})}" href="#" th:text="${i}">1</a>
         </li>
-        <li class="page-item"
-            th:classappend="${boards.totalPages == boards.pageable.pageNumber + 1} ? 'disabled'">
+        <li class="page-item" th:classappend="${boards.totalPages == boards.pageable.pageNumber + 1} ? 'disabled'">
           <a class="page-link" href="#"
              th:href="@{/board/list(page=${boards.pageable.pageNumber + 1}, searchText=${param.searchText})}">Next</a>
         </li>
