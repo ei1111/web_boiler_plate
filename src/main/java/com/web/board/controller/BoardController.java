@@ -29,13 +29,13 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping("/list")
-    public String list(Model model,@PageableDefault(size = 2) Pageable pageable
-            , @RequestParam(required = false, defaultValue = "") String searchText) {
+    public String list(Model model,@PageableDefault Pageable pageable, @RequestParam(required = false ) String searchText) {
         Map<String, Object> result = boardService.findAll(searchText, pageable);
 
         for (String key : result.keySet()) {
             model.addAttribute(key, result.get(key));
         }
+
         return "board/list";
     }
 
