@@ -25,6 +25,7 @@ public class BoardService {
         int endPage = Math.min(boardResponse.getTotalPages(), boardResponse.getPageable().getPageNumber() + 4);
 
         Map<String ,Object> totalMap = new HashMap<>();
+        
         totalMap.put("boards", boardResponse);
         totalMap.put("startPage", startPage);
         totalMap.put("endPage", endPage);

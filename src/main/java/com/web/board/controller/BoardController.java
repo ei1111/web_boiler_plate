@@ -29,7 +29,7 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping("/list")
-    public String list(Model model,@PageableDefault Pageable pageable, @RequestParam(required = false ) String searchText) {
+    public String list(Model model,@PageableDefault Pageable pageable, @RequestParam(required = false) String searchText) {
         Map<String, Object> result = boardService.findAll(searchText, pageable);
 
         for (String key : result.keySet()) {
@@ -53,7 +53,7 @@ public class BoardController {
     }
 
     @PostMapping("/form")
-    public String save(@Valid @ModelAttribute("board") BoardRequest board , BindingResult bindingResult, Model model) {
+    public String save(@Valid @ModelAttribute("board") BoardRequest board , BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "board/form";
         }

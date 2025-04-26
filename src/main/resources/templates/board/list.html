@@ -105,7 +105,7 @@
       </thead>
       <tbody>
       <tr th:each="board : ${boards}">
-        <td th:text="${board.boardId}">Id</td>
+        <td th:text="${board.rowNum}">Id</td>
         <td><a th:href="@{/board/form(boardId=${board.boardId})}" th:text="${board.title}">제목</a>
         </td>
         <td>홍길동</td>
