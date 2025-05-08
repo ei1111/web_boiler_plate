@@ -4,6 +4,9 @@ import com.web.board.domain.Board;
 import com.web.board.form.BoardRequest;
 import com.web.board.form.BoardResponse;
 import com.web.board.service.BoardService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.Map;
 import java.util.Optional;
@@ -25,10 +28,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/board")
+@Tag(name = "게시판 CRUD API")
 public class BoardController {
     private final BoardService boardService;
 
     @GetMapping("/list")
+    @Operation(summary = "게시판 작성 리스트 조회 API")
     public String list(Model model,@PageableDefault Pageable pageable, @RequestParam(required = false) String searchText) {
         Map<String, Object> result = boardService.findAll(searchText, pageable);
 
@@ -40,7 +45,8 @@ public class BoardController {
     }
 
     @GetMapping("/form")
-    public String form(Model model, @RequestParam(required = false) Long boardId) {
+    @Operation(summary = "게시판 글 조회 API")
+    public String form(Model model, @RequestParam(required = false) @Parameter(example = "1") Long boardId) {
         model.addAttribute("board",  findBoardResponseOrDefault(boardId));
         return "board/form";
     }
@@ -53,6 +59,7 @@ public class BoardController {
     }
 
     @PostMapping("/form")
+    @Operation(summary = "게시판 글 등록 API")
     public String save(@Valid @ModelAttribute("board") BoardRequest board , BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "board/form";
@@ -63,6 +70,7 @@ public class BoardController {
     }
 
     @PutMapping("/form")
+    @Operation(summary = "게시판 글 수정 API")
     public String update(BoardRequest board) {
         boardService.update(board);
         return "redirect:/board/list";

@@ -21,7 +21,23 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
-
+management:
+  server:
+    port: 8080
+  endpoint:
+    health:
+      show-components: always
+  endpoints:
+    web:
+      exposure:
+        include: "*" #엔드포인트 기능을 액추에이터에 노출시키겠다는것
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true #tomcat 메트릭o
+logging:
+  level:
+    root: INFO
 ---
 spring:
   config:

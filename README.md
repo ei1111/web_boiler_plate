@@ -8,7 +8,11 @@
 ### H2
 ### Prometheus
 ### Grafana
-### Swagger
+### logback
+### k6
+### Swagger(form 이동에서 변경 해야 함)
+### Slack Webhook(추후 해야 함)
+### Slack Webhook(Alertmanager, 추후 해야 함)
 ___
 ## 로직
 swagger로 테스트 할 수 있습니다.<br>
