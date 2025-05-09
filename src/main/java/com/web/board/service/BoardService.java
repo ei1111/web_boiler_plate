@@ -4,6 +4,7 @@ import com.web.board.domain.Board;
 import com.web.board.form.BoardRequest;
 import com.web.board.form.BoardResponse;
 import com.web.board.repository.BoardRepository;
+import io.micrometer.core.annotation.Counted;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -38,11 +39,13 @@ public class BoardService {
     }
 
     @Transactional
+    @Counted("my.board")
     public void save(BoardRequest boardRequest) {
         boardRepository.save(Board.from(boardRequest));
     }
 
     @Transactional
+    @Counted("my.board")
     public void update(BoardRequest boardRequest) {
         Board board = findById(boardRequest.getBoardId());
         board.updateForm(boardRequest);
