@@ -1,7 +1,101 @@
 <!doctype html>
 <html lang="kr" xmlns:th="http://www.thymleaf.org">
 
-<head th:replace="~{fragments/common :: head('게시판')}"/>
+<head th:replace="~{fragments/common :: head('게시판')}">
+  <script defer="" src="/docs/5.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"></script>
+</head>
+
+<script th:inline="javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    loadBoardList(); // 초기 목록 불러오기
+
+    // 🔍 검색 이벤트
+    document.getElementById("searchForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const keyword = document.getElementById("searchText").value;
+      loadBoardList(0, keyword); // 검색 시 0페이지부터
+    });
+  });
+
+  // 📦 게시글 로딩 + 페이징 처리
+  function loadBoardList(page = 0, searchText = '') {
+    const url = new URL('/board/v1/list', window.location.origin);
+    url.searchParams.append('page', page);
+    if (searchText) {
+      url.searchParams.append('searchText', searchText);
+    }
+
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      renderTotalCount(data.totalCount);
+      renderBoardTable(data.boards);
+      renderPagination(
+          data.pageNumber, data.totalPages,
+          data.startPage, data.endPage,
+          searchText
+      );
+    })
+    .catch(error => {
+      console.error('데이터 불러오기 실패:', error);
+    });
+  }
+
+  // 📊 총 건수 표시
+  function renderTotalCount(count) {
+    document.getElementById('totalCount').innerText = count;
+  }
+
+  // 📄 게시글 테이블 렌더링
+  function renderBoardTable(boards) {
+    const tbody = document.getElementById('boardTableBody');
+    tbody.innerHTML = '';
+
+    boards.forEach(board => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${board.rowNum}</td>
+        <td><a href="/board/form?boardId=${board.boardId}">${board.title}</a></td>
+        <td>${board.writer || '홍길동'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ⏩ 페이지네이션 렌더링
+  function renderPagination(currentPage, totalPages, startPage, endPage, searchText = '') {
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = '';
+
+    // Previous
+    const prevDisabled = currentPage === 0 ? 'disabled' : '';
+    pagination.innerHTML += `
+      <li class="page-item ${prevDisabled}">
+        <a class="page-link" href="#" onclick="loadBoardList(${currentPage - 1}, '${searchText}')">Previous</a>
+      </li>
+    `;
+
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      const active = (i - 1) === currentPage ? 'active' : '';
+      pagination.innerHTML += `
+        <li class="page-item ${active}">
+          <a class="page-link" href="#" onclick="loadBoardList(${i - 1}, '${searchText}')">${i}</a>
+        </li>
+      `;
+    }
+
+    // Next
+    const nextDisabled = currentPage + 1 >= totalPages ? 'disabled' : '';
+    pagination.innerHTML += `
+      <li class="page-item ${nextDisabled}">
+        <a class="page-link" href="#" onclick="loadBoardList(${currentPage + 1}, '${searchText}')">Next</a>
+      </li>
+    `;
+  }
+</script>
+
 <body class="d-flex flex-column h-100">
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
   <symbol id="check2" viewBox="0 0 16 16">
@@ -83,12 +177,12 @@
 <main class="flex-shrink-0">
   <div class="container">
     <h1 class="mt-5">게시판</h1>
-    <div>총 건수: <span th:text="${boards.TotalElements}"></span></div>
 
-    <form class="row g-3 d-flex justify-content-end" method="GET" th:action="@{/board/list}">
+    <div>총 건수: <span id="totalCount"></span></div>
+    <form id="searchForm" class="row g-3 d-flex justify-content-end">
       <div class="col-auto">
         <label for="searchText" class="visually-hidden"></label>
-        <input type="text" class="form-control" id="searchText" name="searchText" th:value="${param.searchText}">
+        <input type="text" class="form-control" id="searchText" name="searchText">
       </div>
       <div class="col-auto">
         <button type="submit" class="btn btn-light mb-3">검색</button>
@@ -103,29 +197,14 @@
         <th scope="col">작성자</th>
       </tr>
       </thead>
-      <tbody>
-      <tr th:each="board : ${boards}">
-        <td th:text="${board.rowNum}">Id</td>
-        <td><a th:href="@{/board/form(boardId=${board.boardId})}" th:text="${board.title}">제목</a>
-        </td>
-        <td>홍길동</td>
-      </tr>
+      <tbody id="boardTableBody">
       </tbody>
     </table>
 
+
     <nav aria-label="Page navigation example">
-      <ul class="pagination justify-content-center">
-        <li class="page-item" th:classappend="${1 == boards.pageable.pageNumber + 1} ? 'disabled'">
-          <a class="page-link" th:href="@{/board/list(page=${boards.pageable.pageNumber - 1} ,searchText=${param.searchText})}">Previous</a>
-        </li>
-        <li class="page-item" th:classappend="${i == boards.pageable.pageNumber + 1} ? 'disabled'"
-            th:each="i: ${#numbers.sequence(startPage, endPage)}">
-          <a class="page-link" th:href="@{/board/list(page=${i-1}, searchText=${param.searchText})}" href="#" th:text="${i}">1</a>
-        </li>
-        <li class="page-item" th:classappend="${boards.totalPages == boards.pageable.pageNumber + 1} ? 'disabled'">
-          <a class="page-link" href="#"
-             th:href="@{/board/list(page=${boards.pageable.pageNumber + 1}, searchText=${param.searchText})}">Next</a>
-        </li>
+      <ul class="pagination justify-content-center" id="pagination">
+        <!-- JS로 페이지 번호 버튼이 여기에 들어감 -->
       </ul>
     </nav>
 
@@ -134,10 +213,5 @@
     </div>
   </div>
 </main>
-
-
-<script defer="" src="/docs/5.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"></script>
-
 </body>
 </html>

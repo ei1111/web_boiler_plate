@@ -1,6 +1,7 @@
 package com.web.board.service;
 
 import com.web.board.domain.Board;
+import com.web.board.form.BoardPageResponse;
 import com.web.board.form.BoardRequest;
 import com.web.board.form.BoardResponse;
 import com.web.board.repository.BoardRepository;
@@ -19,19 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class BoardService {
     private final BoardRepository boardRepository;
 
-    public Map<String ,Object> findAll(String searchText, Pageable pageable) {
+    public BoardPageResponse findAll(String searchText, Pageable pageable) {
         Page<BoardResponse> boardResponse = boardRepository.findByTitleContainingOrContentContaining(searchText, pageable);
-
-        int startPage = Math.max(1, boardResponse.getPageable().getPageNumber() - 4);
-        int endPage = Math.min(boardResponse.getTotalPages(), boardResponse.getPageable().getPageNumber() + 4);
-
-        Map<String ,Object> totalMap = new HashMap<>();
-        
-        totalMap.put("boards", boardResponse);
-        totalMap.put("startPage", startPage);
-        totalMap.put("endPage", endPage);
-
-        return totalMap;
+        return new BoardPageResponse(boardResponse);
     }
 
     public Board findById(Long id) {

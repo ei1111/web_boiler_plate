@@ -85,35 +85,71 @@
   <div class="container">
     <h1 class="mt-5">게시판</h1>
 
-    <form role="form" th:action="@{/board/form}" th:object="${board}" method="post">
-      <input type="hidden" th:field="*{boardId}">
-      <input type="hidden" name="_method" th:if="*{boardId} != null" value="PUT"/>
+    <form id="boardForm">
+      <input type="hidden" id="boardId" name="boardId" th:value="${boardId}" />
 
       <div class="mb-3">
-        <label for="title" class="form-label">제목</label>
-        <input type="text" th:field="*{title}" class="form-control" id="title"
-               th:classappend="${#fields.hasErrors('title')} ? 'is-invalid'">
-        <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="invalid-feedback">
-          제목 에러 메시지
-        </div>
+        <label for="title">제목</label>
+        <input type="text" class="form-control" id="title" name="title" />
       </div>
 
       <div class="mb-3">
-        <label for="content" class="form-label">글 내용</label>
-        <textarea class="form-control" th:field="*{content}" id="content" rows="3"
-                  th:classappend="${#fields.hasErrors('content')} ? 'is-invalid'"/>
-        <div th:if="${#fields.hasErrors('content')}" th:errors="*{content}"
-             class="invalid-feedback">
-          내용 에러 메시지
-        </div>
+        <label for="content">내용</label>
+        <textarea class="form-control" id="content" name="content" rows="3"></textarea>
       </div>
 
-      <a th:href="@{/board/list}" type="button" class="btn btn-primary">취소</a>
-      <button type="submit" class="btn btn-primary">확인</button>
+      <button type="submit" class="btn btn-primary">저장</button>
     </form>
 
   </div>
 </main>
+
+<script th:inline="javascript">
+  const boardId = document.getElementById("boardId").value;
+
+  if (boardId) {
+    // GET 방식에 boardId 파라미터를 붙여줌
+    fetch(`/board/v1/form?boardId=${boardId}`)
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById("title").value = data.title;
+      document.getElementById("content").value = data.content;
+    })
+    .catch(error => console.error("데이터 불러오기 실패:", error));
+  }
+
+  document.getElementById('boardForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const boardId = document.getElementById('boardId').value;
+    const title = document.getElementById('title').value;
+    const content = document.getElementById('content').value;
+
+    const boardData = {
+      boardId: boardId,
+      title: title,
+      content: content
+    };
+
+    const method = boardId ? 'PUT' : 'POST';
+    const url = `/board/v1/form`;
+    fetch(url, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(boardData)
+    })
+    .then(data => {
+      alert('저장되었습니다!');
+      window.location.href = '/board/list'; // 또는 상세 페이지
+    })
+    .catch(error => {
+      console.error('에러 발생:', error);
+      alert('저장 중 에러 발생');
+    });
+  });
+</script>
 
 <script defer="" src="/docs/5.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"></script>
