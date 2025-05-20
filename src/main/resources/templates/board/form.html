@@ -1,7 +1,10 @@
 <!doctype html>
 <html lang="kr" xmlns:th="http://www.thymleaf.org" xmlns="http://www.w3.org/1999/html">
 
-<head th:replace="~{fragments/common :: head('게시판')}"/>
+<head th:replace="~{fragments/common :: head('게시판')}">
+  <script defer="" src="/docs/5.3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"></script>
+</head>
 
 <body class="d-flex flex-column h-100">
 <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
@@ -150,9 +153,5 @@
     });
   });
 </script>
-
-<script defer="" src="/docs/5.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"></script>
-
 </body>
 </html>
