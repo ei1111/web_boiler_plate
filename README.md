@@ -10,7 +10,7 @@
 ### Grafana
 ### logback
 ### k6
-### Swagger(form 이동에서 변경 해야 함)
+### Swagger
 ### Slack Webhook(추후 해야 함)
 ### Slack Webhook(Alertmanager, 추후 해야 함)
 ___
